@@ -1,5 +1,6 @@
 const fs = require("fs");
 
+//BCC parse Address
 let parseAddress = function(input){
     let outputJSON = [];
     for(let cell in input){
@@ -55,6 +56,7 @@ let parseAddress = function(input){
 
 }
 
+//parse cotnact info field
 let parseContactInfo = function(input){
     let outputJSON = [];
     for(let cell in input){
@@ -88,30 +90,94 @@ let parseContactInfo = function(input){
 }
 
 
+//createCustomerObject
+let parseCovaCustomers = function(jsonArray){
+    let output = {};
+    let invoiceArrayRefs = 0;
+    let duplicates = 0;
+    let newRecords = 0;
+    let duplicateArray = [];
+    for(let index in jsonArray){
+        invoiceArrayRefs++;
+        let currentCustomer = jsonArray[index];
+        // console.log(output[jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"]]);
+        if(output[jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"]] == undefined){
+            newRecords++;
+            output[jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"]] = {
+                fullName:jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"],
+                dob:currentCustomer["Date Of Birth"],
+                phone:0 ||currentCustomer["Phone"],
+                email:0 ||currentCustomer["Email"],
+                allowMarketing:currentCustomer["Allow Marketing"],
+                streetAddress:currentCustomer["Street Address 1"],
+                city: currentCustomer["City"],
+                state: currentCustomer["Region"],
+                zip: currentCustomer["Postal Code"],
+                dl: currentCustomer["Drivers License Number"],
+                medRecNum: currentCustomer["Medical Recommendation Number"],
+                medRecExp: currentCustomer["Medical Recommendation Expiry Date"],
+                invoiceArrayRef:invoiceArrayRefs
+            }
+        }else{
+            duplicates++;
+            if(output[jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"]].dl !== currentCustomer["Drivers License Number"]){
+
+            }
+            duplicateArray.push(currentCustomer);
+            console.log("duplicate Customer name")
+        }
+    }
+    // console.log(output);
+    console.log(duplicateArray);
+    console.log(`duplicates: ${duplicates} newRecords ${newRecords}   output length  ${Object.keys(output).length}  input length ${jsonArray.length}`);
+    return output;
+
+}
+
+
+
+// Arithmetic mean
+let getMean = function (data) {
+    return data.reduce(function (a, b) {
+        return Number(a) + Number(b);
+    }) / data.length;
+};
+
+// Standard deviation
+let getSD = function (data) {
+    let m = getMean(data);
+    return Math.sqrt(data.reduce(function (sq, n) {
+        return sq + Math.pow(n - m, 2);
+    }, 0) / (data.length - 1));
+};
+
+
 //console.log(parseAddress(jsonFile));
 // parseContactInfo(jsonFile);
 
 
 
 let main = function(){
-    let jsonFromFile = fs.readFileSync("bcc-2019-10.json", "utf8");
+    let jsonFromFile = fs.readFileSync("rawData/customer-export-ecocannabis.json", "utf8");
     let input = JSON.parse(jsonFromFile);
-    let output0 = parseAddress(input);
-    let output1 = parseContactInfo(input);
+    let CustomerObj = parseCovaCustomers(input);
     // console.log(typeof output1);
-    let output = JSON.stringify(output1);
-    console.log(output);
-    // console.log(input.length);
-    // console.log(output.length);
 
-    fs.writeFile("BCC-2019-10-parsed.json", output, 'utf8', function (err) {
-        if (err) {
-            console.log("An error occured while writing JSON Object to File.");
-            return console.log(err);
-        }
 
-        console.log("JSON file has been saved.");
-    });
+
+    // let output = JSON.stringify(output1);
+    // console.log(output);
+    // // console.log(input.length);
+    // // console.log(output.length);
+    //
+    // fs.writeFile("BCC-2019-10-parsed.json", output, 'utf8', function (err) {
+    //     if (err) {
+    //         console.log("An error occured while writing JSON Object to File.");
+    //         return console.log(err);
+    //     }
+    //
+    //     console.log("JSON file has been saved.");
+    // });
     return "completed";
 }
 
