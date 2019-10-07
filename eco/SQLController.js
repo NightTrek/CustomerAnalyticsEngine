@@ -24,6 +24,41 @@ module.exports = {
 
     },
 
+    // inserts new users into the database
+    insertNewUser: async function(con, tableOneCol, InsertObject) {
+        let queryString =
+            `INSERT INTO ${tableOneCol} SET ?;`;
+        try {
+            console.log(InsertObject)
+            let response = await con.query(
+                queryString, {
+                    fullName: InsertObject.fullName,
+                    genderPref: "Unknown",
+                    dob: InsertObject.dob,
+                    email: InsertObject.email,
+                    phone: InsertObject.phone,
+                    allowMarketing:InsertObject.allowMarketing,
+                    streetAddress: InsertObject.streetAddress,
+                    city: InsertObject.city,
+                    state: InsertObject.state,
+                    zip: InsertObject.zip,
+                    dl: InsertObject.dl,
+                    medRecNum:InsertObject.medRecNum,
+                    medRecExp:InsertObject.medRecExp
+                });
+            return new Promise((resolve, reject) => {
+                if (response) {
+                    resolve(response[0]);
+                } else {
+                    reject({ err: "SQL server Response Error code:500 in method InsertNewUser()" });
+                }
+            });
+        } catch (err) {
+            console.log("error inserting data to table");
+            throw err;
+        }
+    },
+
     selectAllFromTable: async function (con, table) {
         let queryString = "SELECT * FROM ?"
         try {
@@ -124,46 +159,6 @@ module.exports = {
                     reject({ err: "SQL server Response Error code:500 in method findWhoHasMost()" });
                 }
             });
-
-        } catch (err) {
-            console.log("error inserting data to table");
-            throw err;
-        }
-    },
-
-
-    // new user shit
-    insertNewUsers: async function(con, tableOneCol, InsertObject) {
-        let queryString =
-            `INSERT INTO ${tableOneCol} SET ?;`;
-        try {
-            console.log(InsertObject)
-            let response = await con.query(
-                queryString, {
-                    userName: InsertObject.userName,
-                    password: InsertObject.password,
-                    email: InsertObject.email,
-                    phone: InsertObject.phone,
-                    default_currency: InsertObject.default_currency,
-                    watchlistArray: InsertObject.watchlistArray,
-                    notificationsArray: InsertObject.notificationsArray,
-                    exchangeSecret: InsertObject.exchangeSecret
-                });
-            return new Promise((resolve, reject) => {
-                if (response) {
-                    resolve(response[0]);
-                } else {
-                    reject({ err: "SQL server Response Error code:500 in method findWhoHasMost()" });
-                }
-            });
-            return new Promise((resolve, reject) => {
-                if (response) {
-                    resolve(response[0]);
-                } else {
-                    reject({ err: "SQL server Response Error code:500 in method findWhoHasMost()" });
-                }
-            });
-
 
         } catch (err) {
             console.log("error inserting data to table");

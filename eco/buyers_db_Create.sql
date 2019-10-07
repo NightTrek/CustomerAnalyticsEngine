@@ -6,7 +6,7 @@ USE buyers_db;
 
 CREATE TABLE users(
 	id INTEGER AUTO_INCREMENT,
-    fullname varchar(42) NOT NULL,
+    fullName varchar(42) NOT NULL,
     genderPref VARCHAR(42),
     dob varchar(32),
     phone varchar(10),
@@ -20,7 +20,7 @@ CREATE TABLE users(
     medRecNum varchar(64),
     medRecExp varchar(32),
     PRIMARY KEY (id)
-); 
+);
 
 Select * FROM Users;
 

@@ -1,4 +1,5 @@
 const fs = require("fs");
+const sql = require("./SQLController");
 
 //BCC parse Address
 let parseAddress = function(input){
@@ -91,48 +92,30 @@ let parseContactInfo = function(input){
 
 
 //createCustomerObject
-let parseCovaCustomers = function(jsonArray){
-    let output = {};
-    let invoiceArrayRefs = 0;
-    let duplicates = 0;
-    let newRecords = 0;
-    let duplicateArray = [];
+let parseCovaCustomers = async function(jsonArray){
+    let resArray = [];
+    let con = await sql.GetConnection();
     for(let index in jsonArray){
-        invoiceArrayRefs++;
         let currentCustomer = jsonArray[index];
-        // console.log(output[jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"]]);
-        if(output[jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"]] == undefined){
-            newRecords++;
-            output[jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"]] = {
-                fullName:jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"],
-                dob:currentCustomer["Date Of Birth"],
-                phone:0 ||currentCustomer["Phone"],
-                email:0 ||currentCustomer["Email"],
-                allowMarketing:currentCustomer["Allow Marketing"],
-                streetAddress:currentCustomer["Street Address 1"],
-                city: currentCustomer["City"],
-                state: currentCustomer["Region"],
-                zip: currentCustomer["Postal Code"],
-                dl: currentCustomer["Drivers License Number"],
-                medRecNum: currentCustomer["Medical Recommendation Number"],
-                medRecExp: currentCustomer["Medical Recommendation Expiry Date"],
-                invoiceArrayRef:invoiceArrayRefs
-            }
-        }else{
-            duplicates++;
-            if(output[jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"]].dl !== currentCustomer["Drivers License Number"]){
 
-            }
-            duplicateArray.push(currentCustomer);
-            console.log("duplicate Customer name")
-        }
+        let sqlRes = await sql.insertNewUser(con,"users", {
+            fullName:jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"],
+            dob:currentCustomer["Date Of Birth"],
+            phone:currentCustomer["Phone"]|| "",
+            email:currentCustomer["Email"]|| "",
+            allowMarketing:currentCustomer["Allow Marketing"],
+            streetAddress:currentCustomer["Street Address 1"],
+            city: currentCustomer["City"],
+            state: currentCustomer["Region"],
+            zip: currentCustomer["Postal Code"],
+            dl: currentCustomer["Drivers License Number"],
+            medRecNum: currentCustomer["Medical Recommendation Number"],
+            medRecExp: currentCustomer["Medical Recommendation Expiry Date"],
+        });
+        resArray.push(sqlRes);
     }
-    // console.log(output);
-    console.log(duplicateArray);
-    console.log(`duplicates: ${duplicates} newRecords ${newRecords}   output length  ${Object.keys(output).length}  input length ${jsonArray.length}`);
-    return output;
-
-}
+    return resArray;
+};
 
 
 
@@ -160,8 +143,8 @@ let getSD = function (data) {
 let main = function(){
     let jsonFromFile = fs.readFileSync("rawData/customer-export-ecocannabis.json", "utf8");
     let input = JSON.parse(jsonFromFile);
-    let CustomerObj = parseCovaCustomers(input);
-    // console.log(typeof output1);
+    let resArray = parseCovaCustomers(input);
+    console.log(resArray);
 
 
 
