@@ -94,27 +94,42 @@ let parseContactInfo = function(input){
 //createCustomerObject
 let parseCovaCustomers = async function(jsonArray){
     let resArray = [];
+    let errArray = [];
     let con = await sql.GetConnection();
     for(let index in jsonArray){
         let currentCustomer = jsonArray[index];
+        try{
+            let sqlRes = await sql.insertNewUser(con,"users", {
+                fullName:jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"],
+                dob:currentCustomer["Date Of Birth"],
+                phone:currentCustomer["Phone"]|| "",
+                email:currentCustomer["Email"]|| "",
+                allowMarketing:currentCustomer["Allow Marketing"],
+                streetAddress:currentCustomer["Street Address 1"],
+                city: currentCustomer["City"],
+                state: currentCustomer["Region"],
+                zip: currentCustomer["Postal Code"],
+                dl: currentCustomer["Drivers License Number"],
+                medRecNum: currentCustomer["Medical Recommendation Number"],
+                medRecExp: currentCustomer["Medical Recommendation Expiry Date"],
+            });
+            resArray.push(sqlRes);
 
-        let sqlRes = await sql.insertNewUser(con,"users", {
-            fullName:jsonArray[index]["First Name"] +" "+jsonArray[index]["Last Name"],
-            dob:currentCustomer["Date Of Birth"],
-            phone:currentCustomer["Phone"]|| "",
-            email:currentCustomer["Email"]|| "",
-            allowMarketing:currentCustomer["Allow Marketing"],
-            streetAddress:currentCustomer["Street Address 1"],
-            city: currentCustomer["City"],
-            state: currentCustomer["Region"],
-            zip: currentCustomer["Postal Code"],
-            dl: currentCustomer["Drivers License Number"],
-            medRecNum: currentCustomer["Medical Recommendation Number"],
-            medRecExp: currentCustomer["Medical Recommendation Expiry Date"],
-        });
-        resArray.push(sqlRes);
+        }catch(err){
+            errArray.push({err,currentCustomer});
+            continue;
+        }
+
     }
-    return resArray;
+    return new Promise((resolve, reject )=>{
+        if(resArray.length+errArray.length == jsonArray.length){
+            resolve({resArray, errArray, totalLen:jsonArray.length});
+        }
+        else{
+            reject("error lengths missmatched");
+        }
+
+    } )
 };
 
 
@@ -140,11 +155,12 @@ let getSD = function (data) {
 
 
 
-let main = function(){
+let main = async function(){
     let jsonFromFile = fs.readFileSync("rawData/customer-export-ecocannabis.json", "utf8");
     let input = JSON.parse(jsonFromFile);
-    let resArray = parseCovaCustomers(input);
-    console.log(resArray);
+    let response = await parseCovaCustomers(input);
+    console.log(response.errArray);
+    console.log(`err array len ${response.errArray.length}  total len ${response.totalLen}  current len ${response.resArray.length}`);
 
 
 
