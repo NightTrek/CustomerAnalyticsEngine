@@ -1,0 +1,27 @@
+{
+  "name": "ecoanalyticsengine",
+  "version": "1.0.0",
+  "description": "a centralized implementation of a customer database for the purpose of maping sales",
+  "main": "SortCannabisData.js",
+  "scripts": {
+    "test": "Test-System.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ToneDef00/CustomerAnalyticsEngine.git"
+  },
+  "keywords": [
+    "data",
+    "analytics",
+    "TAA"
+  ],
+  "author": "ToneDef00",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ToneDef00/CustomerAnalyticsEngine/issues"
+  },
+  "homepage": "https://github.com/ToneDef00/CustomerAnalyticsEngine#readme",
+  "dependencies": {
+    "mysql2": "^1.7.0"
+  }
+}

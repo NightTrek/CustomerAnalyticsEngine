@@ -2,7 +2,7 @@ const mysql = require('mysql2/promise');
 
 
 module.exports = {
-    db: "cryptobob_db",
+    db: "buyers_db",
 
     GetConnection: async function(db = this.db, pass = "password", host="localhost") {
         try {
