@@ -59,6 +59,35 @@ module.exports = {
         }
     },
 
+    // inserts new users into the database
+    insertNewInvoice: async function(con, tableOneCol, InsertObject) {
+        let queryString =
+            `INSERT INTO ${tableOneCol} SET ?;`;
+        try {
+            console.log(InsertObject)
+            let response = await con.query(
+                queryString, {
+                    fullName: InsertObject.fullName,
+                    genderPref: "Unknown",
+                    dob: InsertObject.dob,
+                    email: InsertObject.email,
+                    phone: InsertObject.phone
+                });
+            return new Promise((resolve, reject) => {
+                if (response) {
+                    resolve(response[0]);
+                } else {
+                    reject({ err: "SQL server Response Error code:500 in method InsertNewUser()" });
+                }
+            });
+        } catch (err) {
+            console.log("error inserting data to table");
+            throw err;
+        }
+    },
+
+
+
     selectAllFromTable: async function (con, table) {
         let queryString = "SELECT * FROM ?"
         try {

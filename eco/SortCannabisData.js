@@ -133,6 +133,10 @@ let parseCovaCustomers = async function(jsonArray){
 };
 
 
+let parseCovaInvoices = async function(jsonArray){
+
+};
+
 
 // Arithmetic mean
 let getMean = function (data) {
@@ -158,9 +162,9 @@ let getSD = function (data) {
 let main = async function(){
     let jsonFromFile = fs.readFileSync("rawData/customer-export-ecocannabis.json", "utf8");
     let input = JSON.parse(jsonFromFile);
-    let response = await parseCovaCustomers(input);
-    console.log(response.errArray);
-    console.log(`err array len ${response.errArray.length}  total len ${response.totalLen}  current len ${response.resArray.length}`);
+    // let response = await parseCovaCustomers(input);
+    // console.log(response.errArray);
+    // console.log(`err array len ${response.errArray.length}  total len ${response.totalLen}  current len ${response.resArray.length}`);
 
 
 
@@ -177,7 +181,7 @@ let main = async function(){
     //
     //     console.log("JSON file has been saved.");
     // });
-    return "completed";
+    return "complete";
 }
 
-main();
+main()
