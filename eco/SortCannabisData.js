@@ -112,6 +112,7 @@ let parseCovaCustomers = async function(jsonArray){
                 dl: currentCustomer["Drivers License Number"],
                 medRecNum: currentCustomer["Medical Recommendation Number"],
                 medRecExp: currentCustomer["Medical Recommendation Expiry Date"],
+                location:   "ECOCANNABIS"
             });
             resArray.push(sqlRes);
 
@@ -123,6 +124,16 @@ let parseCovaCustomers = async function(jsonArray){
     }
     return new Promise((resolve, reject )=>{
         if(resArray.length+errArray.length == jsonArray.length){
+            con.end();
+            let fileout = JSON.stringify(errArray);
+            fs.writeFile("customer_upload_Log", fileout, 'utf8', function (err) {
+                if (err) {
+                    console.log("An error occured while writing JSON Object to File.");
+                    return console.log(err);
+                }
+
+                console.log("JSON file has been saved.");
+            });
             resolve({resArray, errArray, totalLen:jsonArray.length});
         }
         else{
@@ -134,6 +145,76 @@ let parseCovaCustomers = async function(jsonArray){
 
 
 let parseCovaInvoices = async function(jsonArray){
+    let resArray = [];
+    let errArray = [];
+    let names = {};
+    //start connection
+    let con = await sql.GetConnection();
+    //loop through invoice object
+    for(let invoiceNumber in jsonArray){
+        let currentInvoice = jsonArray[invoiceNumber];
+        //check for existing customers and get the customer ID
+        try {
+            let customerRes = await sql.selectWhere(con, "users", "fullName", currentInvoice["Customer"]);
+            //Handle Duplicate full names accounts by not adding them
+            // console.log(customerRes[0].id);
+            if (customerRes.length > 1) {
+                //if the duplicate hasnt been logged yet make a object for it
+                if (names[customerRes[0].fullName] == undefined) {
+                    names[customerRes[0].fullName] = {
+                        invoiceArray: [],
+                        duplicateNumber: 0,
+                        customerRes:customerRes[0]
+                    };
+                }
+                //Add any invoices to the duplicate object and the number of duplicates
+                names[customerRes[0].fullName].invoiceArray.push(currentInvoice);
+                names[customerRes[0].fullName].duplicateNumber = customerRes.length;
+                errArray.push(currentInvoice);
+            }// If the customer account is not a duplicate
+            else {
+                // using the customer ID add the invoice to the invoice table
+                let invoiceRes = await sql.insertNewInvoice(con, "invoices", {
+                    invoiceID:currentInvoice["Invoice #"],
+                    receiptID:currentInvoice["Receipt #"],
+                    total: currentInvoice["Total"],
+                    paymentType:currentInvoice["Payment Method"],
+                    customerName:currentInvoice["Customer"],
+                    customerRef:customerRes[0].id,
+                    createdOn:currentInvoice["Created On"],
+                    location:"ECOCANNABIS"
+                });
+                resArray.push(invoiceRes);
+
+            }
+        }catch (e) {
+            // console.log(e);
+            errArray.push({e,currentInvoice});
+        }
+
+    }
+
+    return new Promise((resolve, reject)=>{
+        if(resArray.length+errArray.length == jsonArray.length){
+            let fileout = JSON.stringify({
+                errArray,
+                names
+            });
+            con.end();
+            fs.writeFile("invoice_upload_Log.json", fileout, 'utf8', function (err) {
+                if (err) {
+                    console.log("An error occured while writing JSON Object to File.");
+                    return console.log(err);
+                }
+
+                console.log("JSON file has been saved.");
+            });
+            resolve(resArray);
+        }
+        else{
+            reject("error")
+        }
+    })
 
 };
 
@@ -160,12 +241,18 @@ let getSD = function (data) {
 
 
 let main = async function(){
-    let jsonFromFile = fs.readFileSync("rawData/customer-export-ecocannabis.json", "utf8");
-    let input = JSON.parse(jsonFromFile);
+    // let jsonFromFile = fs.readFileSync("rawData/customer-export-ecocannabis.json", "utf8");
+    // let input = JSON.parse(jsonFromFile);
     // let response = await parseCovaCustomers(input);
     // console.log(response.errArray);
     // console.log(`err array len ${response.errArray.length}  total len ${response.totalLen}  current len ${response.resArray.length}`);
 
+
+    let jsonFromFile = fs.readFileSync("./invoice-ecocannabis.json", "utf8");
+    let input = JSON.parse(jsonFromFile);
+
+    let response = await parseCovaInvoices(input);
+    console.log(response);
 
 
     // let output = JSON.stringify(output1);

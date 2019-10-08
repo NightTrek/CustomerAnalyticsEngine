@@ -44,7 +44,8 @@ module.exports = {
                     zip: InsertObject.zip,
                     dl: InsertObject.dl,
                     medRecNum:InsertObject.medRecNum,
-                    medRecExp:InsertObject.medRecExp
+                    medRecExp:InsertObject.medRecExp,
+                    location:InsertObject.location
                 });
             return new Promise((resolve, reject) => {
                 if (response) {
@@ -67,11 +68,14 @@ module.exports = {
             console.log(InsertObject)
             let response = await con.query(
                 queryString, {
-                    fullName: InsertObject.fullName,
-                    genderPref: "Unknown",
-                    dob: InsertObject.dob,
-                    email: InsertObject.email,
-                    phone: InsertObject.phone
+                    invoiceID: InsertObject.invoiceID,
+                    receiptID: InsertObject.receiptID,
+                    total: InsertObject.total,
+                    paymentType: InsertObject.paymentType,
+                    customerName: InsertObject.customerName,
+                    customerRef: InsertObject.customerRef,
+                    createdOn: InsertObject.createdOn,
+                    location: InsertObject.location
                 });
             return new Promise((resolve, reject) => {
                 if (response) {

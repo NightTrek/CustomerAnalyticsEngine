@@ -19,6 +19,7 @@ CREATE TABLE users(
     dl  			varchar(42),
     medRecNum 		varchar(64),
     medRecExp 		varchar(32),
+    location		VARCHAR(64),
     PRIMARY KEY 	(id)
 );
 
@@ -26,14 +27,24 @@ Select * FROM users;
 
 SELECT COUNT(*) FROM users;
 
+DROP TABLE invoices;
 CREATE TABLE invoices(
 	id 				integer auto_increment,
     invoiceID 		VARCHAR(100) NOT NULL,
     receiptID 		VARCHAR(100),
     total 			VARCHAR(42) NOT NULL,
     paymentType 	VARCHAR(42),
-    customerName 	VARCHAR(128) NOT NULL,
-    customerRef 	VARCHAR(128) NOT NULL,
+    customerName 	VARCHAR(64) NOT NULL,
+    customerRef 	VARCHAR(64) NOT NULL,
     createdOn		VARCHAR(128) NOT NULL,
+    location		VARCHAR(64) NOT NULL,
+    primary key (id)
+);
+
+SELECT * FROM invoices;
+
+CREATE TABLE receipts(
+	id			integer auto_increment,
+    
     primary key (id)
 );

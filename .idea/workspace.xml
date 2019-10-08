@@ -5,6 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eco/SQLController.js" beforeDir="false" afterPath="$PROJECT_DIR$/eco/SQLController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eco/SortCannabisData.js" beforeDir="false" afterPath="$PROJECT_DIR$/eco/SortCannabisData.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eco/buyers_db_Create.sql" beforeDir="false" afterPath="$PROJECT_DIR$/eco/buyers_db_Create.sql" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -74,7 +75,7 @@
       <workItem from="1569968729038" duration="4000" />
       <workItem from="1569976184406" duration="599000" />
       <workItem from="1570404955862" duration="7754000" />
-      <workItem from="1570425486327" duration="18365000" />
+      <workItem from="1570425486327" duration="25195000" />
     </task>
     <servers />
   </component>
