@@ -90,7 +90,37 @@ module.exports = {
         }
     },
 
-
+    insertCustomeData: async function(con, InsertObject){
+        let queryString =
+            `INSERT INTO userData SET ? ;`;
+        try {
+            // console.log(InsertObject)
+            let response = await con.query(
+                queryString, {
+                    userID: InsertObject.userID,
+                    totalVisitsPerMonth: InsertObject.totalFreq,
+                    totalLifeTimeVisits: InsertObject.totalVisits,
+                    timeBetweenFirstAndLast: InsertObject.totalTimeUnix,
+                    timeBetweenVisits: InsertObject.timeBetweenVisits,
+                    totalSpentPerVisit: InsertObject.totalPerVisit,
+                    visitsInMonth: InsertObject.visitsInMonth,
+                    totalSpent: InsertObject.totalSpent,
+                    sdTimeBetweenVisits: InsertObject.standardDeviationTimeBetweenVisits,
+                    sdSpentPerVisit:InsertObject.standardDeviationSpentPerVisit,
+                    location:InsertObject.location
+                });
+            return new Promise((resolve, reject) => {
+                if (response) {
+                    resolve(response[0]);
+                } else {
+                    reject({ err: "SQL server Response Error code:500 in method InsertNewUser()" });
+                }
+            });
+        } catch (err) {
+            console.log("error inserting data to table");
+            throw err;
+        }
+    },
 
     selectAllFromTable: async function (con, table) {
         let queryString = "SELECT * FROM ?"
@@ -123,6 +153,8 @@ module.exports = {
             throw err;
         }
     },
+
+
     selectSomethingWhere: async function (con, selector, tableInput, colToSearch, valOfCol) {
         let queryString = "SELECT ? FROM ?? WHERE ?? = ?";
         try {
@@ -138,6 +170,7 @@ module.exports = {
             throw err;
         }
     },
+
     SelectAllAndOrderByTmestamp: async function (con, ID, table) {
         let queryString = `SELECT * FROM ?? WHERE foreignId =${ID} ORDER BY unixTimestamp DESC`;
         console.log(queryString);
@@ -174,6 +207,38 @@ module.exports = {
         }
     },
 
+    selectSomethingFromTable: async function(con, something, tableName){
+        let queryString = `SELECT ${something} FROM ${tableName}`;
+        try {
+            let response = await con.query(queryString);
+            return new Promise((resolve, reject) => {
+                if (response) {
+                    resolve(response[0]);
+                } else {
+                    reject({ err: "SQL server response error code:500 in method SelectAndOrder()" })
+                }
+            });
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    findInvoiceByID: async function(con, ID,){
+        let queryString = `SELECT * FROM invoices WHERE customerRef = ${ID} `;
+        try {
+            let response = await con.query(queryString);
+            return new Promise((resolve, reject) => {
+                if (response) {
+                    resolve(response[0]);
+                } else {
+                    reject({ err: "SQL server response error code:500 in method SelectAndOrder()" })
+                }
+            });
+        } catch (err) {
+            throw err;
+        }
+    },
+
     insertOne: async function (con, tableOneCol, InsertObject) {
         let queryString =
             `INSERT INTO currencies SET ?;`;
@@ -199,34 +264,6 @@ module.exports = {
         }
     },
 
-    // new user shit
-    insertNews: async function (con, tableOneCol, InsertObject) {
-        let queryString =
-            `INSERT INTO cryptoNews SET ?;`;
-        try {
-            console.log(InsertObject)
-            let response = await con.query(
-                queryString, {
-                    _id: InsertObject.ValueA,
-                    category: InsertObject.ValueB,
-                    title: InsertObject.ValueC,
-                    description: InsertObject.ValueD,
-                    url: InsertObject.ValueE
-                });
-            return new Promise((resolve, reject) => {
-                if (response) {
-                    resolve(response[0]);
-                } else {
-                    reject({ err: "SQL server Response Error code:500 in method InsertINtoNEWs()" });
-
-                }
-            });
-
-        } catch (err) {
-            console.log("error inserting data to table");
-            throw err;
-        }
-    },
 
     insertEleven: async function (con, tableOneCol, InsertObject) {
         let queryString =

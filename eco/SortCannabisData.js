@@ -1,5 +1,7 @@
 const fs = require("fs");
 const sql = require("./SQLController");
+const A = require("./SalesAnalysisTools");
+const m = require("moment");
 
 //BCC parse Address
 let parseAddress = function(input){
@@ -91,7 +93,8 @@ let parseContactInfo = function(input){
 }
 
 
-//createCustomerObject
+//createCustomer table in MYSQL using my custom built SQLController
+//takes a JSON input from a converted CSV
 let parseCovaCustomers = async function(jsonArray){
     let resArray = [];
     let errArray = [];
@@ -143,7 +146,8 @@ let parseCovaCustomers = async function(jsonArray){
     } )
 };
 
-
+//insert data into the invoice table using the MYSQL controller i built
+//takes a JSON input from a converted CSV
 let parseCovaInvoices = async function(jsonArray){
     let resArray = [];
     let errArray = [];
@@ -219,56 +223,108 @@ let parseCovaInvoices = async function(jsonArray){
 };
 
 
-// Arithmetic mean
-let getMean = function (data) {
-    return data.reduce(function (a, b) {
-        return Number(a) + Number(b);
-    }) / data.length;
+let analyzeFromSQL = async function(){
+    let customerIdRes;
+    let err = [];
+    let insertArray = [];
+    let con = await sql.GetConnection();
+    try {
+
+        customerIdRes = await sql.selectSomethingFromTable(con, "id", 'users');
+        for(let i in customerIdRes){
+            // console.log(customerIdRes[i]['id']);
+            //get invoice array
+            let customerInvoices = await sql.findInvoiceByID(con, customerIdRes[i]['id']);
+            if(customerInvoices.length>1){
+                console.log("========================================================================")
+                console.log("========================================================================")
+                console.log("========================================================================")
+                console.log("========================================================================")
+            }
+            //parse invoice array into data
+            let customerInvoiceData = A.calculateNumberOfVisitsPerMonth(customerInvoices);
+
+            customerInvoiceData.location = "ECOCANNABIS";
+            customerInvoiceData.userID = customerIdRes[i]['id'];
+            customerInvoiceData.timeBetweenVisits = JSON.stringify(customerInvoiceData.timeBetweenVisits);
+            customerInvoiceData.totalPerVisit = JSON.stringify(customerInvoiceData.totalPerVisit);
+            customerInvoiceData.visitsInMonth = JSON.stringify(customerInvoiceData.visitsInMonth);
+            console.log(customerInvoiceData);
+            //insert data into table
+            let insertRes = await sql.insertCustomeData(con,customerInvoiceData);
+            insertArray.push(insertRes);
+        }
+
+    }catch(error){
+        console.log(error);
+        err.push(error);
+    }
+    return new Promise((resolve, reject)=>{
+
+        if(customerIdRes){
+            con.end();
+            console.log(err);
+            resolve({
+                errorArray:err,
+                insertArray
+            });
+        }else{
+            reject(err)
+        }
+    });
+    //
+    // let con = await sql.GetConnection();
+    // let currentCustomerID = "31";
+    // let customerInvoices = await sql.findInvoiceByID(con, currentCustomerID);
+    // let test = A.calculateNumberOfVisitsPerMonth(customerInvoices);
+    // test.location = "ECOCANNABIS";
+    // test.userID = currentCustomerID;
+    // test.timeBetweenVisits = JSON.stringify(test.timeBetweenVisits);
+    // test.totalPerVisit = JSON.stringify(test.totalPerVisit);
+    // test.visitsInMonth = JSON.stringify(test.visitsInMonth);
+    // console.log(test);
+    // let insertRes = await sql.insertCustomeData(con,test);
+    // console.log(insertRes);
+    // con.end();
+
 };
 
-// Standard deviation
-let getSD = function (data) {
-    let m = getMean(data);
-    return Math.sqrt(data.reduce(function (sq, n) {
-        return sq + Math.pow(n - m, 2);
-    }, 0) / (data.length - 1));
-};
 
-
+analyzeFromSQL();
 //console.log(parseAddress(jsonFile));
 // parseContactInfo(jsonFile);
 
 
 
-let main = async function(){
-    // let jsonFromFile = fs.readFileSync("rawData/customer-export-ecocannabis.json", "utf8");
-    // let input = JSON.parse(jsonFromFile);
-    // let response = await parseCovaCustomers(input);
-    // console.log(response.errArray);
-    // console.log(`err array len ${response.errArray.length}  total len ${response.totalLen}  current len ${response.resArray.length}`);
+// let insertFromFile = async function(){
+//     let jsonFromFile = fs.readFileSync("rawData/customer-export-ecocannabis.json", "utf8");
+//     let input = JSON.parse(jsonFromFile);
+//     let response = await parseCovaCustomers(input);
+//     console.log(response.errArray);
+//     console.log(`err array len ${response.errArray.length}  total len ${response.totalLen}  current len ${response.resArray.length}`);
+//
+//
+//     let jsonFromFile = fs.readFileSync("./invoice-ecocannabis.json", "utf8");
+//     let input = JSON.parse(jsonFromFile);
+//
+//     let response = await parseCovaInvoices(input);
+//     console.log(response);
+//
+//
+//     let output = JSON.stringify(output1);
+//     console.log(output);
+//     // console.log(input.length);
+//     // console.log(output.length);
+//
+//     fs.writeFile("BCC-2019-10-parsed.json", output, 'utf8', function (err) {
+//         if (err) {
+//             console.log("An error occured while writing JSON Object to File.");
+//             return console.log(err);
+//         }
+//
+//         console.log("JSON file has been saved.");
+//     });
+//     return "complete";
+// }
 
-
-    let jsonFromFile = fs.readFileSync("./invoice-ecocannabis.json", "utf8");
-    let input = JSON.parse(jsonFromFile);
-
-    let response = await parseCovaInvoices(input);
-    console.log(response);
-
-
-    // let output = JSON.stringify(output1);
-    // console.log(output);
-    // // console.log(input.length);
-    // // console.log(output.length);
-    //
-    // fs.writeFile("BCC-2019-10-parsed.json", output, 'utf8', function (err) {
-    //     if (err) {
-    //         console.log("An error occured while writing JSON Object to File.");
-    //         return console.log(err);
-    //     }
-    //
-    //     console.log("JSON file has been saved.");
-    // });
-    return "complete";
-}
-
-main()
+// insertFromFile();

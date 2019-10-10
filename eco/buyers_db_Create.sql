@@ -23,6 +23,24 @@ CREATE TABLE users(
     PRIMARY KEY 	(id)
 );
 
+DROP TABLE userData;
+
+CREATE TABLE userData(
+	id							INTEGER auto_increment,
+    userID						INTEGER NOT NULL,
+    totalVisitsPerMonth			VARCHAR(10) NOT NULL,
+    totalLifeTimeVisits			INTEGER NOT NULL,
+    timeBetweenFirstAndLast		INTEGER NOT NULL,
+    timeBetweenVisits			VARCHAR(5000) NOT NULL,
+    totalSpentPerVisit			VARCHAR(5000) NOT NULL,
+    visitsInMonth				VARCHAR(10000) NOT NULL,
+    totalSpent					VARCHAR(10) NOT NULL,
+    sdTimeBetweenVisits 		VARCHAR(20) NOT NULL,
+    sdSpentPerVisit				VARCHAR(20) NOT NULL,
+    location					VARCHAR(64) NOT NULL,
+    PRIMARY KEY(id)
+);
+
 Select * FROM users;
 
 SELECT COUNT(*) FROM users;
@@ -43,8 +61,17 @@ CREATE TABLE invoices(
 
 SELECT * FROM invoices;
 
-CREATE TABLE receipts(
-	id			integer auto_increment,
-    
+CREATE TABLE itemsSold(
+	id				integer auto_increment,
+    itemName		VARCHAR(128) NOT NULL,
+    catagory		VARCHAR(64) NOT NULL,
+    salePrice		VARCHAR(10) NOT NULL,
+    listPrice		VARCHAR(10)	NOT NULL,
+    totalDiscount	VARCHAR(10) NOT NULL,
+    quantity		INTEGER NOT NULL,
+    invoiceID		VARCHAR(64) NOT NULL,
+    receiptID		VARCHAR(64) NOT NULL,
+    productID/SKU	VARCHAR(42) NOT NULL,
+    location		VARCHAR(64)	NOT NULL,
     primary key (id)
 );
