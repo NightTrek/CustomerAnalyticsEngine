@@ -26,7 +26,8 @@ module.exports = {
         }, 0) / (data.length - 1));
     },
 
-    calculateNumberOfVisitsPerMonth: function(invoiceArray){ //moment(invoiceArray[invoiceArray.length-1]['createdOn'],"MM-DD-YYYY-hh-mm-ss-a")
+    calculateNumberOfVisitsPerMonth: function(invoiceArray){
+        //moment(invoiceArray[invoiceArray.length-1]['createdOn'],"MM-DD-YYYY-hh-mm-ss-a")
         // console.log(`start date unix ${moment(invoiceArray[0]['createdOn'],"MM-DD-YYYY-hh-mm-ss-a").unix()}  end date ${moment(invoiceArray[0]['createdOn'],"MM-DD-YYYY-hh-mm-ss-a").unix()}`);
         // console.log(moment(invoiceArray[invoiceArray.length-1]['createdOn'],"MM-DD-YYYY-hh-mm-ss-a").diff(moment(invoiceArray[0]['createdOn'],"MM-DD-YYYY-hh-mm-ss-a"), "months"));
         let invoicesCalculated = {
@@ -38,7 +39,8 @@ module.exports = {
             totalPerVisit:[],
             visitsInMonth:{}
         };
-        if(invoiceArray.length = 1){
+
+        if(invoiceArray.length == 1){
             console.log("invoice array ===================== 1");
             invoicesCalculated.totalFreq = 0;
             invoicesCalculated.totalTimeUnix = 0;
@@ -63,10 +65,7 @@ module.exports = {
                 invoicesCalculated.visitsInMonth[unixTime.month()] = [];
             }
             //add the invoice to the month.
-            invoicesCalculated.visitsInMonth[unixTime.month()].push({
-                invoiceID:invoiceArray[i].id,
-                total:invoiceArray[i].total
-            });
+            invoicesCalculated.visitsInMonth[unixTime.month()].push(invoiceArray[i].id);
 
             //if this is the first tx set the prev tx to the current tx and skip the rest
             if(prevUnixTime == 0){
@@ -81,8 +80,6 @@ module.exports = {
             invoicesCalculated.totalSpent += parseFloat(invoiceArray[i].total);
             invoicesCalculated.totalPerVisit.push(invoiceArray[i].total);
         }
-        invoicesCalculated.standardDeviationTimeBetweenVisits= this.getSD(invoicesCalculated.timeBetweenVisits);
-        invoicesCalculated.standardDeviationSpentPerVisit= this.getSD(invoicesCalculated.totalPerVisit);
         return invoicesCalculated;
     }
 

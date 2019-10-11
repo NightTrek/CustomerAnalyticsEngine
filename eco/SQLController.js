@@ -105,8 +105,6 @@ module.exports = {
                     totalSpentPerVisit: InsertObject.totalPerVisit,
                     visitsInMonth: InsertObject.visitsInMonth,
                     totalSpent: InsertObject.totalSpent,
-                    sdTimeBetweenVisits: InsertObject.standardDeviationTimeBetweenVisits,
-                    sdSpentPerVisit:InsertObject.standardDeviationSpentPerVisit,
                     location:InsertObject.location
                 });
             return new Promise((resolve, reject) => {

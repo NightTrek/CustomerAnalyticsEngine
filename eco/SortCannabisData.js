@@ -235,12 +235,6 @@ let analyzeFromSQL = async function(){
             // console.log(customerIdRes[i]['id']);
             //get invoice array
             let customerInvoices = await sql.findInvoiceByID(con, customerIdRes[i]['id']);
-            if(customerInvoices.length>1){
-                console.log("========================================================================")
-                console.log("========================================================================")
-                console.log("========================================================================")
-                console.log("========================================================================")
-            }
             //parse invoice array into data
             let customerInvoiceData = A.calculateNumberOfVisitsPerMonth(customerInvoices);
 
@@ -251,8 +245,16 @@ let analyzeFromSQL = async function(){
             customerInvoiceData.visitsInMonth = JSON.stringify(customerInvoiceData.visitsInMonth);
             console.log(customerInvoiceData);
             //insert data into table
-            let insertRes = await sql.insertCustomeData(con,customerInvoiceData);
-            insertArray.push(insertRes);
+            try {
+                let insertRes = await sql.insertCustomeData(con, customerInvoiceData);
+                insertArray.push(insertRes);
+            }catch (e) {
+                console.log(customerInvoiceData);
+                console.log(e);
+                console.error(e);
+                return;
+                err.push(e);
+            }
         }
 
     }catch(error){
