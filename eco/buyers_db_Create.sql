@@ -28,15 +28,13 @@ DROP TABLE userData;
 CREATE TABLE userData(
 	id							INTEGER auto_increment,
     userID						INTEGER NOT NULL,
-    totalVisitsPerMonth			VARCHAR(10) NOT NULL,
+    totalVisitsPerMonth			VARCHAR(20) NOT NULL,
     totalLifeTimeVisits			INTEGER NOT NULL,
     timeBetweenFirstAndLast		INTEGER NOT NULL,
-    timeBetweenVisits			VARCHAR(5000) NOT NULL,
-    totalSpentPerVisit			VARCHAR(5000) NOT NULL,
+    timeBetweenVisits			VARCHAR(10000) NOT NULL,
+    totalSpentPerVisit			VARCHAR(10000) NOT NULL,
     visitsInMonth				VARCHAR(10000) NOT NULL,
-    totalSpent					VARCHAR(10) NOT NULL,
-    sdTimeBetweenVisits 		VARCHAR(20) NOT NULL,
-    sdSpentPerVisit				VARCHAR(20) NOT NULL,
+    totalSpent					VARCHAR(20) NOT NULL,
     location					VARCHAR(64) NOT NULL,
     PRIMARY KEY(id)
 );

@@ -9,3 +9,7 @@ SELECT * FROM invoices;
 
 SELECT * FROM invoices WHERE customerRef = 31;
 
+SELECT id FROM users;
+
+SELECT * FROM userData;
+
