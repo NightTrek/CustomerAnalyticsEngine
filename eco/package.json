@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/ToneDef00/CustomerAnalyticsEngine#readme",
   "dependencies": {
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "mysql2": "^1.7.0"
   }
 }
